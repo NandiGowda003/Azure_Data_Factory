@@ -1,0 +1,25 @@
+{
+	"name": "triggerdataflow",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "selectedFiles",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2026-09-17T20:21:00",
+				"endTime": "2026-09-18T14:47:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}

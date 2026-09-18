@@ -1,0 +1,15 @@
+{
+	"name": "ADF-nandi",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "45dd55a0-ac9b-40f6-b127-715cdfc191fd",
+		"tenantId": "39c45f0d-50bd-4ea0-bd32-118cd75d17e9"
+	}
+}
