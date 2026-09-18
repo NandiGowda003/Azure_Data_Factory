@@ -5,7 +5,14 @@
 			{
 				"name": "Get Metadata",
 				"type": "GetMetadata",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Validation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -168,10 +175,24 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Validation",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "validfiles",
+						"type": "DatasetReference"
+					},
+					"timeout": "0.12:00:00",
+					"sleep": 10
+				}
 			}
 		],
 		"annotations": [],
-		"lastPublishTime": "2026-09-17T14:43:44Z"
+		"lastPublishTime": "2026-09-18T06:57:30Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }
