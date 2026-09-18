@@ -19,6 +19,10 @@
 			"type": "string",
 			"defaultValue": "https://azuredatafactorykaashi.dfs.core.windows.net/"
 		},
+		"man_trigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
+		},
 		"manager_trigger_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
@@ -72,6 +76,29 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "ADF-nandi_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"man_trigger_properties_typeProperties_scope": {
+						"value": "[parameters('man_trigger_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADF-nandi_ArmTemplate_0')]"
+			]
 		}
 	]
 }

@@ -19,6 +19,10 @@
 			"type": "string",
 			"defaultValue": "https://azuredatafactorykaashi.dfs.core.windows.net/"
 		},
+		"man_trigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
+		},
 		"manager_trigger_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
@@ -136,7 +140,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"annotations": [],
-				"lastPublishTime": "2026-09-17T12:46:12Z"
+				"lastPublishTime": "2026-09-18T05:16:17Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/csv_source')]",
@@ -221,6 +225,65 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/prd_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ExecuteMngrPipline",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pipelineManger",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "ExecuteOnSelectedFilePipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "ExecuteMngrPipline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "selectedFiles",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2026-09-18T07:08:53Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipelineManger')]",
+				"[concat(variables('factoryId'), '/pipelines/selectedFiles')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/selectedFiles')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -229,7 +292,14 @@
 					{
 						"name": "Get Metadata",
 						"type": "GetMetadata",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Validation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -399,17 +469,33 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Validation",
+						"type": "Validation",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "validfiles",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"timeout": "0.12:00:00",
+							"sleep": 10
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
 				"annotations": [],
-				"lastPublishTime": "2026-09-17T14:43:44Z"
+				"lastPublishTime": "2026-09-18T06:57:30Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/metedataDS')]",
 				"[concat(variables('factoryId'), '/dataflows/transformcsv')]",
+				"[concat(variables('factoryId'), '/datasets/validfiles')]",
 				"[concat(variables('factoryId'), '/datasets/copy_source')]",
 				"[concat(variables('factoryId'), '/datasets/reporting_sinkcsv')]"
 			]
@@ -484,7 +570,8 @@
 						"type": "Array"
 					}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2026-09-18T05:16:17Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/metedataDS')]"
@@ -926,6 +1013,75 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/validfiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedservicedatalink",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "csvfiles",
+						"fileSystem": "source"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "transaction_id",
+						"type": "String"
+					},
+					{
+						"name": "transactional_date",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "customer_id",
+						"type": "String"
+					},
+					{
+						"name": "payment",
+						"type": "String"
+					},
+					{
+						"name": "credit_card",
+						"type": "String"
+					},
+					{
+						"name": "loyalty_card",
+						"type": "String"
+					},
+					{
+						"name": "cost",
+						"type": "String"
+					},
+					{
+						"name": "quantity",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/linkedservicedatalink')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/likedservice_git')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -958,6 +1114,36 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/man_trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "prd_pipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/source/blobs/csvfiles/Fact_Sales_1.csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('man_trigger_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/prd_pipeline')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/manager_trigger')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -983,16 +1169,8 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipelineManger",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
+				"runtimeState": "Stopped",
+				"pipelines": [],
 				"type": "BlobEventsTrigger",
 				"typeProperties": {
 					"blobPathBeginsWith": "/source/blobs/csvfiles/Fact_Sales_1.csv",
@@ -1003,9 +1181,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipelineManger')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/triggerdataflow')]",
@@ -1013,16 +1189,8 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "selectedFiles",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
+				"runtimeState": "Stopped",
+				"pipelines": [],
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
@@ -1034,9 +1202,7 @@
 					}
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/selectedFiles')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/transformcsv')]",

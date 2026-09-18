@@ -14,6 +14,9 @@
 		"linkedservicedatalink_properties_typeProperties_url": {
 			"value": "https://azuredatafactorykaashi.dfs.core.windows.net/"
 		},
+		"man_trigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
+		},
 		"manager_trigger_properties_typeProperties_scope": {
 			"value": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
 		},

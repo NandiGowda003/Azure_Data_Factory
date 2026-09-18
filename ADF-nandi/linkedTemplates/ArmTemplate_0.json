@@ -85,6 +85,47 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/manual_trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/source/blobs/csvfiles/Fact_Sales_1.csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('manual_trigger_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/triggerdataflow')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2026-09-17T20:21:00",
+						"endTime": "2026-09-18T14:47:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/copy_source')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -520,6 +561,75 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/validfiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "linkedservicedatalink",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "csvfiles",
+						"fileSystem": "source"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "transaction_id",
+						"type": "String"
+					},
+					{
+						"name": "transactional_date",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "customer_id",
+						"type": "String"
+					},
+					{
+						"name": "payment",
+						"type": "String"
+					},
+					{
+						"name": "credit_card",
+						"type": "String"
+					},
+					{
+						"name": "loyalty_card",
+						"type": "String"
+					},
+					{
+						"name": "cost",
+						"type": "String"
+					},
+					{
+						"name": "quantity",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/linkedservicedatalink')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pipelineManger')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -623,7 +733,7 @@
 					"elapsedTimeMetric": {}
 				},
 				"annotations": [],
-				"lastPublishTime": "2026-09-17T12:46:12Z"
+				"lastPublishTime": "2026-09-18T05:16:17Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/csv_source')]",
@@ -777,7 +887,8 @@
 						"type": "Array"
 					}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2026-09-18T05:16:17Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/metedataDS')]"
@@ -857,7 +968,14 @@
 					{
 						"name": "Get Metadata",
 						"type": "GetMetadata",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Validation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -1027,80 +1145,35 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Validation",
+						"type": "Validation",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "validfiles",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"timeout": "0.12:00:00",
+							"sleep": 10
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
 				"annotations": [],
-				"lastPublishTime": "2026-09-17T14:43:44Z"
+				"lastPublishTime": "2026-09-18T06:57:30Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/metedataDS')]",
 				"[concat(variables('factoryId'), '/dataflows/transformcsv')]",
+				"[concat(variables('factoryId'), '/datasets/validfiles')]",
 				"[concat(variables('factoryId'), '/datasets/copy_source')]",
 				"[concat(variables('factoryId'), '/datasets/reporting_sinkcsv')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/manual_trigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipelineManger",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/source/blobs/csvfiles/Fact_Sales_1.csv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('manual_trigger_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipelineManger')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/triggerdataflow')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "selectedFiles",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 15,
-						"startTime": "2026-09-17T20:21:00",
-						"endTime": "2026-09-18T14:47:00",
-						"timeZone": "India Standard Time"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/selectedFiles')]"
 			]
 		}
 	]
