@@ -1,0 +1,70 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADF-nandi"
+		},
+		"linkedservicedatalink_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'linkedservicedatalink'"
+		},
+		"likedservice_git_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
+		"linkedservicedatalink_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://azuredatafactorykaashi.dfs.core.windows.net/"
+		},
+		"manager_trigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "ADF-nandi_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"linkedservicedatalink_accountKey": {
+						"value": "[parameters('linkedservicedatalink_accountKey')]"
+					},
+					"likedservice_git_properties_typeProperties_url": {
+						"value": "[parameters('likedservice_git_properties_typeProperties_url')]"
+					},
+					"linkedservicedatalink_properties_typeProperties_url": {
+						"value": "[parameters('linkedservicedatalink_properties_typeProperties_url')]"
+					},
+					"manager_trigger_properties_typeProperties_scope": {
+						"value": "[parameters('manager_trigger_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

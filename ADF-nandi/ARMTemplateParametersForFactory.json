@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ADF-nandi"
+		},
+		"linkedservicedatalink_accountKey": {
+			"value": ""
+		},
+		"likedservice_git_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"linkedservicedatalink_properties_typeProperties_url": {
+			"value": "https://azuredatafactorykaashi.dfs.core.windows.net/"
+		},
+		"manager_trigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
+		}
+	}
+}
