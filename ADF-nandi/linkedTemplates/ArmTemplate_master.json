@@ -23,6 +23,10 @@
 			"type": "string",
 			"defaultValue": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
 		},
+		"manual_trigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -61,6 +65,9 @@
 					},
 					"manager_trigger_properties_typeProperties_scope": {
 						"value": "[parameters('manager_trigger_properties_typeProperties_scope')]"
+					},
+					"manual_trigger_properties_typeProperties_scope": {
+						"value": "[parameters('manual_trigger_properties_typeProperties_scope')]"
 					}
 				}
 			},

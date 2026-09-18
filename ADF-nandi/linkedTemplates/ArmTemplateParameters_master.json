@@ -17,6 +17,9 @@
 		"manager_trigger_properties_typeProperties_scope": {
 			"value": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
 		},
+		"manual_trigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/cd59d345-2cd7-43fb-97b5-e15d68c58ee3/resourceGroups/azuredatafactorynandi/providers/Microsoft.Storage/storageAccounts/azuredatafactorykaashi"
+		},
 		"containerUri": {
 			"value": ""
 		},
