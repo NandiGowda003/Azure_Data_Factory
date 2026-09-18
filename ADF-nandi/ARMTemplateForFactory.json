@@ -964,15 +964,7 @@
 			"properties": {
 				"annotations": [],
 				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipelineManger",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
+				"pipelines": [],
 				"type": "BlobEventsTrigger",
 				"typeProperties": {
 					"blobPathBeginsWith": "/source/blobs/csvfiles/Fact_Sales_1.csv",
@@ -983,9 +975,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipelineManger')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/manual_trigger')]",
